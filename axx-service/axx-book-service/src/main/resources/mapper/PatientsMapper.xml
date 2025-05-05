@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.axx.book.dao.PatientsMapper">
+  <select id="findPageWithCondition" resultType="com.axx.book.pojo.Patients">
+    SELECT * FROM patients
+    <where>
+      <if test="id != null">
+        AND id = #{id}
+      </if>
+      <if test="name != null and name != ''">
+        AND name LIKE CONCAT('%', #{name}, '%')
+      </if>
+      <if test="gender != null and gender != ''">
+        AND gender = #{gender}
+      </if>
+      <if test="IDnumber != null and IDnumber != ''">
+        AND id_number = #{IDnumber}
+      </if>
+      <if test="userID != null and userID != ''">
+        AND user_id = #{userID}
+      </if>
+    </where>
+  </select>
+  <select id="findAllPatients" resultType="com.axx.book.pojo.Patients">
+    SELECT * FROM patients
+  </select>
+  <select id="findPatiensByUserId" resultType="com.axx.book.pojo.Patients">
+    SELECT * FROM patients WHERE user_id = #{userId}
+  </select>
+</mapper>

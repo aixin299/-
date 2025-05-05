@@ -1,0 +1,15 @@
+body{
+    margin: 0 0 0 0;
+}
+#loginform {
+    width: 400px;
+    height: 250px;
+    margin: auto;
+    margin-top: 100px;
+    border: 2px red solid;
+    border-radius: 10px;
+    text-align: center;
+}
+#loginform table {
+    margin: auto;
+}

@@ -1,0 +1,12 @@
+#app{
+    width: 400px;
+    height: 600px;
+    margin: auto;
+    margin-top: 100px;
+    border: 2px #81BEF7 solid;
+    border-radius: 10px;
+    text-align: center;
+}
+#app table {
+    margin: auto;
+}

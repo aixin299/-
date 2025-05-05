@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.axx.user.dao.UserMapper">
+  <!-- 查询所有用户 -->
+  <select id="selectAll" resultType="com.axx.user.pojo.User">
+    SELECT * FROM user
+  </select>
+
+  <!-- 根据ID查询单个用户 -->
+  <select id="selectById" resultType="com.axx.user.pojo.User">
+    SELECT * FROM user WHERE id = #{id}
+  </select>
+
+  <!-- 插入新用户 -->
+  <insert id="insert" parameterType="com.axx.user.pojo.User">
+    INSERT INTO user (phone, password, nickname, status, role)
+    VALUES (#{phone}, #{password}, #{nickname}, #{status}, #{role})
+  </insert>
+
+  <!-- 更新用户信息 -->
+  <update id="updateById" parameterType="com.axx.user.pojo.User">
+    UPDATE user
+    <set>
+      <if test="phone != null">
+        phone = #{phone},
+      </if>
+      <if test="password != null">
+        password = #{password},
+      </if>
+      <if test="nickname != null">
+        nickname = #{nickname},
+      </if>
+      <if test="status != null">
+        status = #{status},
+      </if>
+      <if test="role != null">
+        role = #{role}
+      </if>
+    </set>
+    WHERE id = #{id}
+  </update>
+
+  <!-- 根据ID删除用户 -->
+  <delete id="deleteById" parameterType="java.lang.Integer">
+    DELETE FROM user WHERE id = #{id}
+  </delete>
+
+  <!-- 根据手机号查询用户 -->
+  <select id="findByPhone" resultType="com.axx.user.pojo.User">
+    SELECT * FROM user WHERE phone = #{phone}
+  </select>
+
+  <!-- 根据条件查询用户 -->
+  <select id="selectByExample" resultType="com.axx.user.pojo.User">
+    SELECT * FROM user
+    <where>
+      <if test="id != null">
+        id = #{id}
+      </if>
+      <if test="phone != null">
+        AND phone = #{phone}
+      </if>
+      <if test="password != null">
+        AND password = #{password}
+      </if>
+      <if test="nickname != null">
+        AND nickname LIKE '%${nickname}%'
+      </if>
+      <if test="status != null">
+        AND status = #{status}
+      </if>
+      <if test="role != null">
+        AND role = #{role}
+      </if>
+    </where>
+  </select>
+</mapper>

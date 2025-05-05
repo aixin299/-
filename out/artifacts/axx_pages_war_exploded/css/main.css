@@ -1,0 +1,41 @@
+/* 整个面板样式 */
+.el-cascader-menu {
+    min-width: 50%;
+    
+    
+
+}
+.el-cascader-menu__wrap {
+    height: 100%;
+}
+/* 单独一行样式 */
+.el-cascader-node {
+    
+    height: 30px;
+    font-size: 20px;
+}
+
+.el-cascader-panel{
+    height: 500px;
+   position: absolute;
+   bottom: 0px;
+}
+#app{
+    height: 100%;
+}
+body{
+    margin: 0;
+    width: 100%;
+    height: 100%;
+}
+html{
+    height: 100%;
+}
+#mypanel{
+    margin-bottom: 0px;
+}
+
+.el-cascader-panel.is-bordered {
+    border: 1px solid #81BEF7;
+    border-radius: 4px;
+}

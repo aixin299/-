@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.axx.book.dao.BookMapper">
+  <!-- 查询所有记录 -->
+  <select id="selectAll" resultType="com.axx.book.entity.Book">
+    SELECT * FROM book
+  </select>
+  <!-- 根据ID查询记录 -->
+  <select id="selectById" resultType="com.axx.book.entity.Book">
+    SELECT * FROM book WHERE id = #{id}
+  </select>
+  <!-- 插入记录 -->
+  <insert id="insert" parameterType="com.axx.book.entity.Book">
+    INSERT INTO book (column1, column2) VALUES (#{column1}, #{column2})
+  </insert>
+  <!-- 更新记录 -->
+  <update id="update" parameterType="com.axx.book.entity.Book">
+    UPDATE book SET column1 = #{column1}, column2 = #{column2} WHERE id = #{id}
+  </update>
+  <!-- 删除记录 -->
+  <delete id="delete" parameterType="java.lang.Integer">
+    DELETE FROM book WHERE id = #{id}
+  </delete>
+</mapper>

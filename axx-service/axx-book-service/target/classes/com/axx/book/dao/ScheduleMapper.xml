@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.axx.book.dao.ScheduleMapper">
+
+  <!-- 根据医生ID和日期查询排班信息 -->
+  <select id="getScheduleByDoctorId" resultType="com.axx.book.pojo.Schedule">
+    SELECT * FROM schedule
+    WHERE doctor_id = #{doctorId} AND schedule_date = #{date}
+  </select>
+
+  <!-- 减少排班数量 -->
+  <update id="reduceSchedule" parameterType="java.lang.String">
+    UPDATE schedule
+    SET remaining_number = remaining_number - 1
+    WHERE id = #{scheduleId}
+  </update>
+
+  <!-- 查询所有排班信息 -->
+  <select id="findAll" resultType="com.axx.book.pojo.Schedule">
+    SELECT * FROM schedule
+  </select>
+
+  <!-- 根据条件查询排班信息 -->
+  <select id="selectByExample" resultType="com.axx.book.pojo.Schedule">
+    SELECT * FROM schedule
+    <where>
+      <if test="id != null">
+        id = #{id}
+      </if>
+      <if test="doctorId != null">
+        AND doctor_id = #{doctorId}
+      </if>
+      <if test="scheduleDate != null">
+        AND schedule_date = #{scheduleDate}
+      </if>
+      <if test="remainingNumber != null">
+        AND remaining_number = #{remainingNumber}
+      </if>
+    </where>
+  </select>
+
+  <!-- 根据ID查询单个Schedule信息 -->
+  <select id="selectById" resultType="com.axx.book.pojo.Schedule">
+    SELECT * FROM schedule WHERE id = #{id}
+  </select>
+
+  <!-- 插入新的Schedule信息 -->
+  <insert id="insert" parameterType="com.axx.book.pojo.Schedule">
+    INSERT INTO schedule (doctor_id, schedule_date, remaining_number)
+    VALUES (#{doctorId}, #{scheduleDate}, #{remainingNumber})
+  </insert>
+
+  <!-- 根据ID删除单个Schedule信息 -->
+  <delete id="deleteById" parameterType="java.lang.Integer">
+    DELETE FROM schedule WHERE id = #{id}
+  </delete>
+
+  <!-- 更新Schedule信息 -->
+  <update id="update" parameterType="com.axx.book.pojo.Schedule">
+    UPDATE schedule
+    <set>
+      <if test="doctorId != null">
+        doctor_id = #{doctorId},
+      </if>
+      <if test="scheduleDate != null">
+        schedule_date = #{scheduleDate},
+      </if>
+      <if test="remainingNumber != null">
+        remaining_number = #{remainingNumber}
+      </if>
+    </set>
+    WHERE id = #{id}
+  </update>
+
+</mapper>

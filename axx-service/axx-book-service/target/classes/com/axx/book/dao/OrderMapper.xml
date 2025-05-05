@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.axx.book.dao.OrderMapper">
+
+  <!-- 添加订单 -->
+  <insert id="add" parameterType="com.axx.book.pojo.Order">
+    INSERT INTO `order` (user_id, patient_id, schedule_id)
+    VALUES (#{userId}, #{patientId}, #{scheduleId})
+  </insert>
+
+  <!-- 查询所有订单 -->
+  <select id="selectAll" resultType="com.axx.book.pojo.Order">
+    SELECT * FROM `order`
+  </select>
+
+  <!-- 根据条件查询订单 -->
+  <select id="selectByExample" resultType="com.axx.book.pojo.Order">
+    SELECT * FROM `order`
+    <where>
+      <if test="id != null">
+        id = #{id}
+      </if>
+      <if test="userId != null">
+        AND user_id = #{userId}
+      </if>
+      <if test="patientId != null">
+        AND patient_id = #{patientId}
+      </if>
+      <if test="scheduleId != null">
+        AND schedule_id = #{scheduleId}
+      </if>
+    </where>
+  </select>
+
+  <!-- 根据 ID 删除订单 -->
+  <delete id="deleteById" parameterType="java.lang.Integer">
+    DELETE FROM `order` WHERE id = #{id}
+  </delete>
+
+  <!-- 根据 ID 查询订单 -->
+  <select id="selectById" resultType="com.axx.book.pojo.Order">
+    SELECT * FROM `order` WHERE id = #{id}
+  </select>
+
+  <!-- 根据 ID 更新订单 -->
+  <update id="updateById" parameterType="com.axx.book.pojo.Order">
+    UPDATE `order`
+    SET user_id = #{userId},
+    patient_id = #{patientId},
+    schedule_id = #{scheduleId}
+    WHERE id = #{id}
+  </update>
+
+  <!-- 根据条件查询Order信息 -->
+  <select id="findByExample" resultType="com.axx.book.pojo.Order">
+    SELECT * FROM order_info
+    <where>
+      <if test="id != null">
+        id = #{id}
+      </if>
+      <if test="userId != null">
+        AND user_id = #{userId}
+      </if>
+      <if test="patientId != null">
+        AND patient_id = #{patientId}
+      </if>
+      <if test="scheduleId != null">
+        AND schedule_id = #{scheduleId}
+      </if>
+    </where>
+  </select>
+
+</mapper>

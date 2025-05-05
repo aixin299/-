@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.axx.book.dao.DoctorMapper">
+  <!-- 查询所有记录 -->
+  <select id="selectAll" resultType="com.axx.book.pojo.Doctor">
+    SELECT * FROM doctor
+  </select>
+  <!-- 根据ID查询记录 -->
+  <select id="selectById" resultType="com.axx.book.pojo.Doctor">
+    SELECT * FROM doctor WHERE id = #{id}
+  </select>
+  <!-- 插入记录 -->
+  <insert id="insert" parameterType="com.axx.book.pojo.Doctor">
+    INSERT INTO doctor (column1, column2) VALUES (#{column1}, #{column2})
+  </insert>
+  <!-- 更新记录 -->
+  <update id="update" parameterType="com.axx.book.pojo.Doctor">
+    UPDATE doctor SET column1 = #{column1}, column2 = #{column2} WHERE id = #{id}
+  </update>
+  <!-- 删除记录 -->
+  <delete id="delete" parameterType="java.lang.Integer">
+    DELETE FROM doctor WHERE id = #{id}
+  </delete>
+  <!-- 根据科室 ID 查询医生 -->
+  <select id="selectByDepartmentId" resultType="com.axx.book.pojo.Doctor">
+    SELECT * FROM doctor WHERE department_id = #{departmentId}
+  </select>
+  <!-- 根据条件查询记录 -->
+  <select id="selectByExample" resultType="com.axx.book.pojo.Doctor">
+    SELECT * FROM doctor
+    <where>
+      <if test="column1 != null">
+        AND column1 = #{column1}
+      </if>
+      <if test="column2 != null">
+        AND column2 = #{column2}
+      </if>
+    </where>
+  </select>
+</mapper>

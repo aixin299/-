@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title></title>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="../element-ui-2.13.0/lib/theme-chalk/index.css" />
+	<script type="text/javascript" src="../js/vue.js"></script>
+	<script type="text/javascript" src="../element-ui-2.13.0/lib/index.js"></script>
+	<script type="text/javascript" src="../js/axios-0.18.0.js"></script>
+</head>
+
+<body>
+	<div id="app">
+		<el-tag type="info" effect="dark" v-if="inputVisible" closable="true" :disable-transitions="disable"
+			@close="handleClose">医师管理</el-tag>
+		<div v-if="inputVisible">
+			<template>
+				<!-- 
+					handleSelectionChange 只要页面中的复选框被点击时，就会触发！
+				 -->
+				<el-table :data="tableData" @selection-change="handleSelectionChange" size="medium"
+					highlight-current-row="true" style="width: 100%">
+					<el-table-column type="selection" width="55" prop="uid">
+					</el-table-column>
+					<el-table-column width="50px" label="序号" type="index">
+					</el-table-column>
+					<el-table-column label="姓名" prop="name">
+					</el-table-column>
+					</el-table-column>
+					<el-table-column label="年龄" prop="age">
+					</el-table-column>
+					</el-table-column>
+					<el-table-column label="性别" prop="gender" width="50px">
+					</el-table-column>
+					<el-table-column label="职位" prop="position" width="100px">
+					</el-table-column>
+					<el-table-column label="科室号" prop="departmentId">
+					</el-table-column>
+					<el-table-column label="手机号" prop="phone" width="150px">
+					</el-table-column>
+
+
+					<el-table-column label="操作" width="150px">
+						<template slot-scope="scope">
+							<el-button size="mini" type='success' @click="handleEdit(scope.$index, scope.row)">修改
+							</el-button>
+							<el-button size="mini" type="info" @click="handlelook(scope.$index, scope.row)">详情
+							</el-button>
+						</template>
+					</el-table-column>
+					<el-table-column align="left" width="150px">
+						<template slot="header" slot-scope="scope">
+							<el-input v-model="search" size="mini" @blur="handleUserList" placeholder="输入用户名称搜索" />
+						</template>
+					</el-table-column>
+				</el-table>
+			</template>
+			<br />
+			<el-row>
+				<el-button type="danger" @click="delAll()">删除选中</el-button>
+				<el-button type="primary"><a href="addDoctor.html" target="main"
+						style="text-decoration: none;color:white">添加医师</a></el-button>
+			</el-row>
+			<template>
+				<div class="block" align="right">
+					<el-pagination @size-change="handleSizeChange" :slot="tableData"
+						@current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[3, 4, 5, 6]"
+						:page-size="pageSize" layout="total, sizes, prev, pager, next, jumper, slot"
+						:total="totalCount">
+					</el-pagination>
+				</div>
+			</template>
+		</div>
+
+		<!-- 	修改 -->
+		<el-dialog title="修改医师" :visible.sync="dialogVisible" :close-on-click-modal="false" width="50%">
+			<el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+
+				<el-form-item label="真实姓名" prop="name">
+					<el-input v-model="ruleForm.name" style="width: 210px;"></el-input>
+				</el-form-item>
+				<el-form-item label="年龄" prop="age">
+					<el-input v-model.number="ruleForm.age" style="width: 210px;"></el-input>
+				</el-form-item>
+				<el-form-item label="性别" prop="gender">
+
+					<el-select v-model="ruleForm.gender" placeholder="请选择性别" @change="$forceUpdate()">
+						<el-option label="男" value="男"></el-option>
+						<el-option label="女" value="女"></el-option>
+
+					</el-select>
+				</el-form-item>
+				
+				<el-form-item label="职位" prop="position">
+
+					<el-select v-model="ruleForm.position" placeholder="请选择职位" @change="$forceUpdate()">
+						<el-option label="主任医师" value="主任医师"></el-option>
+						<el-option label="副主任医师" value="副主任医师"></el-option>
+						<el-option label="主治医师" value="主治医师"></el-option>
+						<el-option label="住院医师" value="住院医师"></el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item label="科室" prop="departmentId">
+					<el-select v-model="ruleForm.departmentId" placeholder="请选择科室" @change="$forceUpdate()">
+
+						<el-option v-for="item in secondDepartments" :value="item.id">
+							{{item.departmentName}}</el-option>
+
+					</el-select>
+				</el-form-item>
+
+
+				<el-form-item label="手机号码" prop="phone">
+					<el-input v-model="ruleForm.phone" style="width: 210px;"></el-input>
+				</el-form-item>
+				<el-form-item label="擅长" prop="major">
+					<el-input v-model.number="ruleForm.major" style="width: 210px;"></el-input>
+				</el-form-item>
+				<el-form-item label="简介" prop="doctorDesc">
+					<el-input v-model.number="ruleForm.doctorDesc" style="width: 210px;"></el-input>
+				</el-form-item>
+
+
+			</el-form>
+
+			<span slot="footer" class="dialog-footer">
+				<el-button @click="dialogVisible = false">取 消</el-button>
+				<el-button type="primary" @click="submitForm('ruleForm')">确 定</el-button>
+			</span>
+		</el-dialog>
+
+		<!-- 详情 -->
+		<el-dialog title="医师信息" :visible.sync="dialogVisible1" :close-on-click-modal="false" width="50%">
+			<el-form disabled :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+
+				<el-form-item label="姓名" prop="name">
+					<el-input v-model="ruleForm.name" style="width: 210px;"></el-input>
+				</el-form-item>
+				<el-form-item label="年龄" prop="age">
+					<el-input v-model.number="ruleForm.age" style="width: 210px;"></el-input>
+				</el-form-item>
+				<el-form-item label="性别" prop="gender">
+					<el-input v-model.number="ruleForm.gender" style="width: 210px;"></el-input>
+				</el-form-item>
+				<el-form-item label="职位" prop="position">
+					<el-input v-model.number="ruleForm.position" style="width: 210px;"></el-input>
+				</el-form-item>
+				<el-form-item label="部门号" prop="departmentId">
+					<el-input v-model.number="ruleForm.departmentId" style="width: 210px;"></el-input>
+				</el-form-item>
+				<el-form-item label="部门" >
+					<el-input v-model="dialogDepartment" style="width: 210px;"></el-input>
+				</el-form-item>
+				<el-form-item label="手机号码" prop="phone">
+					<el-input v-model="ruleForm.phone" style="width: 210px;"></el-input>
+				</el-form-item>
+				<el-form-item label="擅长" prop="major">
+					<el-input v-model.number="ruleForm.major" style="width: 210px;"></el-input>
+				</el-form-item>
+
+				<el-form-item label="简介" prop="doctorDesc">
+					<el-input v-model.number="ruleForm.doctorDesc" style="width: 210px;"></el-input>
+				</el-form-item>
+			</el-form>
+		</el-dialog>
+	</div>
+</body>
+<script>
+	axios.defaults.withCredentials = true
+	new Vue({
+		el: "#app",
+		data: {
+			/*分页相关*/
+			tableData: [], //当前页要展示的分页列表数据
+			search: '', //查询条件
+			pageSize: 5, //每页显示的记录数
+			currentPage: 1, //当前页码
+			totalCount: '', //总记录数
+			secondDepartments: [], // 科室列表
+			dialogDepartment:'',
+			/*批量删除*/
+			multipleSelection: [], //批量删除存放选中的复选框对应的用户
+			delarr: [], //存放删除的数据，就是每个选中用户的id值！
+			/*选项卡*/
+			inputVisible: true,
+			disable: false,
+			/* 对话框 */
+			dialogVisible: false,
+			dialogVisible1: false,
+			deptsss:'',
+			ruleForm: {
+				id: '',
+				name: '',
+				age: '',
+				gender: '',
+				position: '',
+				departmentId: '',
+				
+				phone: '',
+				major: '',
+				doctorDesc: ''
+			},
+			rules: {
+				username: [{
+						required: true,
+						message: '请输入用户名称',
+						trigger: 'blur'
+					},
+					{
+						min: 3,
+						max: 11,
+						message: '长度在 3 到 5 个字符',
+						trigger: 'blur'
+					}
+				],
+				role: [{
+					required: true,
+					message: '请选择角色',
+					trigger: 'change'
+				}],
+				name: [{
+					required: true,
+					message: '请输入真实姓名',
+					trigger: 'blur'
+				}],
+				phone: [{
+						required: true,
+						message: '请输入手机号码',
+						trigger: 'blur'
+					},
+					{
+						validator: function (rule, value, callback) {
+							if (/^1[34578]\d{9}$/.test(value) == false) {
+								callback(new Error("请输入正确的手机号"));
+							} else {
+								callback();
+							}
+						},
+						trigger: 'blur'
+					}
+				],
+				password: [{
+					required: true,
+					message: '请输入密码',
+					trigger: 'blur'
+				}, {
+					min: 6,
+					max: 30,
+					message: '长度在 6 到 30 个字符'
+				}, {
+					pattern: /^(\w){6,20}$/,
+					message: '只能输入6-20个字母、数字、下划线'
+				}],
+				status: [{
+					required: true,
+					message: '请选择状态',
+					trigger: 'change'
+				}],
+				sex: [{
+					required: true,
+					message: '请选择性別',
+					trigger: 'change'
+				}],
+				age: [{
+						required: true,
+						message: '年龄不能为空',
+						trigger: 'blur'
+					},
+					{
+						validator: function (rule, value, callback) {
+							if (!Number.isInteger(value)) {
+								callback(new Error('请输入数字值'));
+							} else {
+								if (value < 18) {
+									callback(new Error('必须年满18岁'));
+								} else {
+									callback();
+								}
+							}
+						},
+						trigger: 'blur'
+					}
+				],
+				createtime: [{
+					type: 'date',
+					required: true,
+					message: '请选择日期',
+					trigger: 'change'
+				}],
+			},
+		},
+		created() {
+			this.findAllDoctor();
+			this.findAllDepartment();
+		},
+		methods: {
+			//点击小叉叉的方法
+			handleClose() {
+				this.inputVisible = false;
+				this.disable = true;
+			},
+			//点击修改按钮的方法
+			handleEdit(index, row) {
+				//出现修改的对话框
+				this.dialogVisible = true;
+				//赋值数据源
+				this.ruleForm.id = row.id;
+				this.ruleForm.name = row.name;
+				this.ruleForm.age = row.age;
+				this.ruleForm.gender = row.gender;
+				this.ruleForm.position = row.position;
+				this.ruleForm.departmentId = row.departmentId;
+				this.ruleForm.phone = row.phone;
+				this.ruleForm.major = row.major;
+				this.ruleForm.doctorDesc = row.doctorDesc;
+				console.log(this.ruleForm);
+
+			},
+			//点击详情按钮的方法 index下标，row就是当前这一行中的数据！
+			handlelook(index, row) {
+				//出现详情的对话框
+				this.dialogVisible1 = true;
+				//赋值数据源
+				this.ruleForm = row;
+				this.dialogDepartment = this.secondDepartments[row.departmentId -1 ].departmentName;
+				
+			},
+			/* 
+				val参数，代表当前点击复选框时，所有用户构成的一个数组！
+			*/
+			handleSelectionChange(val) {
+				//为保存每个用户的数组赋值
+				this.multipleSelection = val;
+			},
+			delAll() {
+				//先将存储id的数组清空
+				this.delarr = [];
+				//遍历数组，拿到每个用户的id值！
+				for (var i in this.multipleSelection) {
+					//将每个用户的id值，存放到数组中！
+					this.delarr.push(this.multipleSelection[i].id);
+				}
+				//异常处理
+				if (this.delarr.length == 0) {
+					this.$message({
+						type: "warning",
+						message: "您还未选择删除的用户！"
+					})
+				} else {
+					this.$confirm('是否删除选中的用户?', '提示', {
+						confirmButtonText: '确定',
+						cancelButtonText: '取消',
+						type: 'warning'
+					}).then(() => {
+						console.log(this.delarr);
+						//axios请求Servlet，完成批量删除
+						axios.delete('http://localhost:9003/doctor/deleteByIds?ids=' + this.delarr).then(
+							response => {
+								if (response.data.code == 200) {
+									this.$message({
+										type: "success",
+										message: response.data.message
+									})
+								} else {
+									this.$message({
+										type: "error",
+										message: response.data.message
+									})
+								}
+								//刷新页面！
+								setTimeout(function () {
+									window.location = "index.html";
+								}, 1500)
+							})
+					}).catch(() => {
+						this.$message({
+							type: 'info',
+							message: '已取消删除'
+						});
+					});
+				}
+			},
+			//每页数据量发生改变的方法
+			handleSizeChange: function (size) {
+				this.pageSize = size; //先改变每页数据量的值
+				this.findAllDoctor(); //重新调用获取用户的方法
+			},
+			//当前页码发生改变的方法
+			handleCurrentChange: function (currentPage) {
+				this.currentPage = currentPage; //先改变当前页码的值
+				this.findAllDoctor(); //重新调用获取用户的方法
+			},
+			//模糊查询输入框的失焦事件
+			handleUserList() {
+				this.currentPage = 1; //将当前页码改为第一页！防止出现页码不匹配的问题！
+				this.findAllDoctor();
+			},
+			//获取页面展示的所有用户的方法
+			findAllDoctor() {
+				let str = "http://localhost:9003/doctor/search/" +
+					this.currentPage + "/" + this.pageSize;
+
+				axios.post(str, {
+					name: this.search
+				}).then(response => {
+
+					//为表格展示的用户数组赋值
+					this.tableData = response.data.data.rows;
+					//为总数据量赋值
+					this.totalCount = response.data.data.total;
+				})
+			},
+			findAllDepartment() {
+				axios.get('http://localhost:9003/departmentSecond').then(response => {
+					this.secondDepartments = response.data.data;
+					console.log(response.data.data);
+				})
+			},
+			//修改对话框中，点击确定按钮的方法
+			submitForm(formName) {
+
+				// 查询科室对应的id
+				axios.get('http://localhost:9003/departmentSecond/findByName/' + this.ruleForm[
+					'department']).then(response => {
+					console.log(response.data.data.id);
+					this.deptsss = response.data.data.id;
+
+				})
+				console.log(this.deptsss);
+				this.$refs[formName].validate((valid) => {
+					if (valid) {
+						
+						//发送axios请求，完成修改操作
+						axios.post('http://localhost:9003/doctor/update', {
+
+							id: this.ruleForm['id'],
+							name: this.ruleForm['name'],
+							age: this.ruleForm['age'],
+							gender: this.ruleForm['gender'],
+							position: this.ruleForm['position'],
+							departmentId: this.ruleForm['departmentId'],
+							phone: this.ruleForm['phone'],
+							major: this.ruleForm['major'],
+							doctorDesc: this.ruleForm['doctorDesc'],
+
+
+						}).then(response => {
+							if (response.data.code == 200) {
+								this.$message({
+									type: "success",
+									message: response.data.message
+								})
+							} else {
+								this.$message({
+									type: "error",
+									message: response.data.message
+								})
+							}
+							//刷新页面！
+							setTimeout(function () {
+								window.location = "index.html";
+							}, 1500)
+						})
+					} else {
+						this.$message({
+							type: "error",
+							message: "数据校验未通过！"
+						})
+					}
+				});
+			},
+			resetForm(formName) {
+
+			}
+		}
+
+	})
+</script>
+
+</html>

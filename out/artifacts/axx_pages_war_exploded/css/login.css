@@ -1,0 +1,27 @@
+body{
+    margin: 0 0 0 0;
+}
+#loginform {
+    width: 60%;
+    height: 350px;
+    margin: auto;
+    position:relative;
+    margin-top:150px;
+    border: 2px #81BEF7 solid;
+    border-radius: 10px;
+    text-align: center;
+}
+#loginform table {
+    margin: auto;
+}
+#msg{
+    color: red;
+}
+body{
+    height: 100%;
+    width: 100%;
+}
+html{
+    height: 100%;
+    width: 100%;
+}
